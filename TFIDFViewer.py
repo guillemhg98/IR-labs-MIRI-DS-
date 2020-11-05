@@ -9,7 +9,7 @@ TFIDFViewer
     Receives two paths of files to compare (the paths have to be the ones used when indexing the files)
 
 :Authors:
-    bejar
+    Guillem
 
 :Version: 
 
@@ -79,16 +79,27 @@ def toTFIDF(client, index, file_id):
     :param file:
     :return:
     """
-
     # Get document terms frequency and overall terms document frequency
     file_tv, file_df = document_term_vector(client, index, file_id)
-
-    max_freq = max([f for _, f in file_tv])
-
-    dcount = doc_count(client, index)
-
-    tfidfw = []
+            # file_tv: freq term in doc       
+            # file_df: n doc with file
+    max_freq = max([f for _, f in file_tv])  # freq max term
+    dcount = doc_count(client, index)        # num docs in index
+    print(" Number of docs in index: "+dcount)
+    print(" Frequence of max term:   "+max_freq)
+    
+    term= []
+    termFrq_docFrqTerm = []
+    words = []
     for (t, w),(_, df) in zip(file_tv, file_df):
+        termFreq = w/max_freq
+        dfi = np.log2(dcount/df)
+        wdi = termFreq * dfi
+        term.append(t)
+        termFreq_docFreqTerm.append(wdi)
+        termFreq_docFreqTerm = normalize(termFreq_docFreqTerm)
+    return zip(term,termFreq_decFreqTerm)
+        
         #
         # Something happens here
         #
@@ -104,7 +115,9 @@ def print_term_weigth_vector(twv):
     """
     #
     # Program something here
-    #
+    print("Weight term vector: "+len(twv)+"\n")
+    for (a,b) in twv:
+        print(a,"   ",b)
     pass
 
 
@@ -115,10 +128,13 @@ def normalize(tw):
     :param tw:
     :return:
     """
-    #
-    # Program something here
-    #
-    return None
+    n = 0
+    for ti in tw:
+        n += ti*ti
+    norm = np.sqrt(n)
+    for i in range(0,len(tw)):
+        tw[i] = tw[i]/count
+    return tw
 
 
 def cosine_similarity(tw1, tw2):
@@ -128,10 +144,19 @@ def cosine_similarity(tw1, tw2):
     :param tw2:
     :return:
     """
-    #
-    # Program something here
-    #
-    return 0
+    cos_sim = 0
+    i = 0
+    j = 0
+    while(i < len(tw1) and j < len(tw2)):
+        if (tw1[i][0] == tw2[j][0]):
+            cos_sim += tw1[i][0]*tw2[j][1]
+            i += 1
+            j += 1
+        elif (tw1[i][0] > tw2[j][0]):
+            j += 1
+        else:
+            i += 1
+    return cos_sim
 
 def doc_count(client, index):
     """
