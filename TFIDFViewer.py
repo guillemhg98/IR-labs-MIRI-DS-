@@ -1,18 +1,15 @@
 """
 .. module:: TFIDFViewer
-
 TFIDFViewer
 ******
 
 :Description: TFIDFViewer
-
     Receives two paths of files to compare (the paths have to be the ones used when indexing the files)
 
 :Authors:
     Guillem
 
 :Version: 
-
 :Date:  05/07/2017
 """
 
@@ -32,7 +29,6 @@ __author__ = 'bejar'
 def search_file_by_path(client, index, path):
     """
     Search for a file using its path
-
     :param path:
     :return:
     """
@@ -53,7 +49,6 @@ def document_term_vector(client, index, id):
     Returns the term vector of a document and its statistics a two sorted list of pairs (word, count)
     The first one is the frequency of the term in the document, the second one is the number of documents
     that contain the term
-
     :param client:
     :param index:
     :param id:
@@ -61,10 +56,8 @@ def document_term_vector(client, index, id):
     """
     termvector = client.termvectors(index=index, id=id, fields=['text'],
                                     positions=False, term_statistics=True)
-
     file_td = {}
     file_df = {}
-
     if 'text' in termvector['term_vectors']:
         for t in termvector['term_vectors']['text']['terms']:
             file_td[t] = termvector['term_vectors']['text']['terms'][t]['term_freq']
@@ -153,7 +146,6 @@ def cosine_similarity(tw1, tw2):
 def doc_count(client, index):
     """
     Returns the number of documents in an index
-
     :param client:
     :param index:
     :return:
@@ -169,20 +161,16 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-
     index = args.index
-
     file1 = args.files[0]
     file2 = args.files[1]
 
     client = Elasticsearch()
 
     try:
-
         # Get the files ids
         file1_id = search_file_by_path(client, index, file1)
         file2_id = search_file_by_path(client, index, file2)
-
         # Compute the TF-IDF vectors
         file1_tw = toTFIDF(client, index, file1_id)
         file2_tw = toTFIDF(client, index, file2_id)
